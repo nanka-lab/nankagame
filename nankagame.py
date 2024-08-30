@@ -157,8 +157,8 @@ HEIGHT = VBT + GS * ROW + VBB   #ウィンドウの縦幅 (とりあえず720)
 
 #pygameのセットアップ
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("なんかのゲーム")
+screen = pygame.display.set_mode((WIDTH, HEIGHT)) #ウィンドウを作成
+pygame.display.set_caption("NANKA GAME") #ウィンドウの名前をゲーム名「NANKA GAME」に設定
 clock = pygame.time.Clock()
 
 class Player:
@@ -214,6 +214,40 @@ class Player:
 #変数設定
 MAP = Map(COL, ROW, 50, 10)
 MAP.set_map()
+
+#ゲーム画面の状態を管理する変数を設定
+STATE_TITLE = 0 #タイトル画面
+STATE_MAP = 1 #マップを表示する画面
+game_state = STATE_TITLE #ゲーム画面の状態をタイトル画面に設定
+
+#ボタン描画関数
+def draw_button(screen, rect, text, font, bg_color, text_color):
+    pygame.draw.rect(screen, bg_color, rect)
+    rendered_text = font.render(text, True, text_color)
+    screen.blit(rendered_text, (rect.x + (rect.width - rendered_text.get_width()) // 2,
+                                rect.y + (rect.height - rendered_text.get_height()) // 2))
+
+#ボタン描画
+start_button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2, 200, 50)
+
+
+#タイトル画面の描画関数定義
+def draw_title_screen(screen, start_button_rect):
+    screen.fill((0, 0, 0))  # 背景を黒にする
+    font = pygame.font.Font(None, 74) #日本語のフォントを導入してください（やり方わからんby 石田)
+    text = font.render("NANKA GAME", True, (255, 255, 255)) 
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 3 - text.get_height() // 2))
+
+    # ボタンを描画
+    button_font = pygame.font.Font(None, 50)　#日本語のフォントを導入してください（やり方わからんby 石田)
+    draw_button(screen, start_button_rect, "Game Start", button_font, (50, 200, 50), (255, 255, 255)) #文字をゲームスタートに変更してください
+    
+    pygame.display.flip()
+
+
+
+
+
 #MAP.print_map()
 bgcolor = "white"                           #背景色
 gridlinecolor = "black"                     #マス枠色
@@ -227,64 +261,49 @@ keylevel = 1                                #キーレベル
 running = True
 
 while running:
-    
-    #イベントの取得
+    # イベントの取得
     for event in pygame.event.get():
-        
-        #Xボタンで終了
-        if event.type  ==  QUIT:
-            running  =  False
-        
-        #キーイベントの取得
-        if event.type == KEYDOWN:
-            
-            #移動設定
-            if event.key in [K_w, K_a, K_s, K_d, K_UP, K_LEFT, K_DOWN, K_RIGHT]:
-                
-                """
-                for _ in range(keylevel): #キーレベル分だけ移動する
-                    
-                    x = int(player.pos.x)
-                    y = int(player.pos.y)
-                    
-                    if event.key in [K_w, K_UP]:
-                        if 0 < y and not(MAP.map[y-1][x] == MAP.WALL):
-                            player.pos.y -= 1
-                            
-                    if event.key in [K_a, K_LEFT]:
-                        if 0 < x and not(MAP.map[y][x-1] == MAP.WALL):
-                            player.pos.x -= 1
-                            
-                    if event.key in [K_s, K_DOWN]:
-                        if y < ROW - 1 and not(MAP.map[y+1][x] == MAP.WALL):
-                            player.pos.y += 1
-                            
-                    if event.key in [K_d, K_RIGHT]:
-                        if x < COL - 1 and not(MAP.map[y][x+1] == MAP.WALL):
-                            player.pos.x += 1
-                #"""
-                pass 
+        # Xボタンで終了
+        if event.type == QUIT:
+            running = False
 
-    #背景
-    screen.fill(bgcolor)
-    outline = Rect(HBL - 1, VBT - 1, GS * COL + 2, GS * ROW + 2)
-    pygame.draw.rect(screen, gridlinecolor, outline)
-    for h in range(ROW):
-        for w in range(COL):
-            outline = Rect(HBL + GS * w, VBT + GS * h, GS, GS)
-            fill = Rect(HBL + 1 + GS * w, VBT + 1 + GS * h, GS - 2, GS - 2)
-            pygame.draw.rect(screen, gridlinecolor, outline)
-            if MAP.map[h][w] == MAP.PATH:
-                pygame.draw.rect(screen, normalgridcolor, fill)
-            elif MAP.map[h][w] == MAP.EVENT:
-                pygame.draw.rect(screen, eventgridcolor, fill)
-            elif MAP.map[h][w] == MAP.WALL:
-                pygame.draw.rect(screen, wallcolor, fill)
-                
-    player.update(screen)       #プレイヤー位置のアップデート
-    pygame.display.flip()       #ディスプレイのアップデート
-    clock.tick(60)              #FPSを60に設定する
+        # マウスクリックイベントの検出
+        if event.type == MOUSEBUTTONDOWN:
+            if game_state == STATE_TITLE:
+                if start_button_rect.collidepoint(event.pos):
+                    game_state = STATE_MAP
+
+        # ゲームプレイ中のキー操作を処理
+        if event.type == KEYDOWN:
+            if game_state == STATE_MAP:
+                if event.key in [K_w, K_a, K_s, K_d, K_UP, K_LEFT, K_DOWN, K_RIGHT]:
+                    pass
+
+    # 状態に応じた描画処理
+    if game_state == STATE_TITLE:
+        draw_title_screen(screen, start_button_rect)
+    elif game_state == STATE_MAP:
+        # 背景
+        screen.fill(bgcolor)
+        outline = Rect(HBL - 1, VBT - 1, GS * COL + 2, GS * ROW + 2)
+        pygame.draw.rect(screen, gridlinecolor, outline)
+        for h in range(ROW):
+            for w in range(COL):
+                outline = Rect(HBL + GS * w, VBT + GS * h, GS, GS)
+                fill = Rect(HBL + 1 + GS * w, VBT + 1 + GS * h, GS - 2, GS - 2)
+                pygame.draw.rect(screen, gridlinecolor, outline)
+                if MAP.map[h][w] == MAP.PATH:
+                    pygame.draw.rect(screen, normalgridcolor, fill)
+                elif MAP.map[h][w] == MAP.EVENT:
+                    pygame.draw.rect(screen, eventgridcolor, fill)
+                elif MAP.map[h][w] == MAP.WALL:
+                    pygame.draw.rect(screen, wallcolor, fill)
+        player.update(screen)  # プレイヤー位置のアップデート
+        pygame.display.flip()  # ディスプレイのアップデート
+
+    clock.tick(60)  # FPSを60に設定する
 
 pygame.quit()
+
 
 #"""
