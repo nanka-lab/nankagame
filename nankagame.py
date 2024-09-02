@@ -92,7 +92,7 @@ def main():
             screen.blit(text_t, text_t_rect)
             
             #スタートボタン作ります
-            button = pygame.draw.rect(screen, green, (width // 2 - 100, height // 2, 200, 50))
+            button_s = pygame.draw.rect(screen, green, (width // 2 - 100, height // 2, 200, 50))
             font_b = pygame.font.SysFont("ヒラキノ角コシックw1", 28)     #ボタンのフォント設定
             text_b = font_b.render("げーむすたーと", True, black)
             text_b_rect = text_b.get_rect(center = (width // 2, height // 2 + 25))
@@ -144,6 +144,30 @@ def main():
             text_m = font_m.render("ステージ1：1F   フロア数：5   制限時間：126s", True, black)
             screen.blit(text_m, (22, 10))     #いい感じのところに配置
 
+            #目標確認ボタン作ります
+            button_g = pygame.draw.rect(screen, black, (width - 90, 70, 80, 40))
+            font_g = pygame.font.SysFont("ヒラキノ角コシックw1", 28)     #ボタンのフォント設定
+            text_g = font_g.render("目標", True, white)
+            text_g_rect = text_g.get_rect(center = (width - 90 + 80 // 2, 70 + 40 // 2))
+            screen.blit(text_g, text_g_rect)
+
+        elif game_state == 2:     #目標確認画面の描写
+            screen.fill(gray)     #背景を全部灰色にする
+
+            #目標確認リスト作ります
+            list_g = pygame.draw.rect(screen, white, (50, 50, width - 100, height - 100))
+            font_l = pygame.font.SysFont("ヒラキノ角コシックw1", 50)     #フォント設定
+            text_l = font_l.render("ここでデータベース班の出番だ！", True, black)
+            text_l_rect = text_l.get_rect(center = (width // 2, height // 2))
+            screen.blit(text_l, text_l_rect)
+
+            #戻るボタンを作ります
+            button_b = pygame.draw.rect(screen, black, (10, 10, 60, 30))
+            font_b = pygame.font.SysFont("ヒラキノ角コシックw1", 25)     #フォント設定
+            text_b = font_b.render("戻る", True, white)
+            text_b_rect = text_b.get_rect(center = (10 + 60 // 2, 10 + 30 // 2))
+            screen.blit(text_b, text_b_rect)
+            
         pygame.display.update()     #今までの変更を全部反映させる
 
         #イベント処理
@@ -156,7 +180,13 @@ def main():
                     player(event.key)
             elif event.type == MOUSEBUTTONDOWN:
                 if game_state == 0:     #タイトル画面なら反応
-                    if button.collidepoint(event.pos):     #ボタンがクリックされたら
+                    if button_s.collidepoint(event.pos):     #ボタンがクリックされたら
+                        game_state = 1     #ゲーム画面に移行
+                elif game_state == 1:     #ゲーム画面なら反応
+                    if button_g.collidepoint(event.pos):     #ボタンがクリックされたら
+                        game_state = 2     #目標確認画面に移行
+                elif game_state == 2:     #目標確認画面なら反応
+                    if button_b.collidepoint(event.pos):     #ボタンがクリックされたら
                         game_state = 1     #ゲーム画面に移行
         
 #実行
