@@ -1,309 +1,140 @@
-import sys
-import random
-from collections import deque
-
-class Maze:         #迷路生成(壁伸ばし法) ※"【Python】壁伸ばし法で迷路を生成する"より
-    PATH = 0
-    WALL = 1
-
-    def __init__(self, width, height, seed=0):
-        self.width = width
-        self.height = height
-        if self.width < 5 or self.height < 5:
-            sys.exit()
-        if self.width % 2 == 0:
-            self.width += 1
-        if self.height % 2 == 0:
-            self.height += 1
-        self.maze = [[self.PATH for x in range(self.width)] for y in range(self.height)]
-        #random.seed(seed)
-
-    def set_outer_wall(self):
-        for y in range(0, self.height):
-            for x in range(0, self.width):
-                if x == 0 or y == 0 or x == self.width-1 or y == self.height-1:
-                    self.maze[y][x] = self.WALL
-        return self.maze
-
-    def set_maze_kabenobashi(self):
-        self.set_outer_wall()
-        stack = deque()
-        for y in range(2, self.height-1, 2):
-            for x in range(2, self.width-1, 2):
-                stack.append([x,y])
-        while True:
-            if len(stack) == 0:
-                break
-            random.shuffle(stack)
-            point = stack.pop()
-            if self.maze[point[1]][point[0]] == self.WALL:
-                continue
-            self.maze[point[1]][point[0]] = self.WALL
-            extend_wall = []
-            extend_wall.append([point[0],point[1]])
-            while True:
-                directions = []
-                if self.maze[point[1]-1][point[0]] == self.PATH and [point[0],point[1]-2] not in extend_wall:
-                    directions.append(0)
-                if self.maze[point[1]][point[0]+1] == self.PATH and [point[0]+2,point[1]] not in extend_wall:
-                    directions.append(1)
-                if self.maze[point[1]+1][point[0]] == self.PATH and [point[0],point[1]+2] not in extend_wall:
-                    directions.append(2)
-                if self.maze[point[1]][point[0]-1] == self.PATH and [point[0]-2,point[1]] not in extend_wall:
-                    directions.append(3)
-                if len(directions) == 0:
-                    break
-                direction = random.choice(directions)
-                if direction == 0:
-                    if self.maze[point[1]-2][point[0]] == self.WALL:
-                        self.maze[point[1]-1][point[0]] = self.WALL
-                        break
-                    else:
-                        self.maze[point[1]-1][point[0]] = self.WALL
-                        self.maze[point[1]-2][point[0]] = self.WALL
-                        extend_wall.append([point[0],point[1]-2])
-                        point = [point[0],point[1]-2]
-                elif direction == 1:
-                    if self.maze[point[1]][point[0]+2] == self.WALL:
-                        self.maze[point[1]][point[0]+1] = self.WALL
-                        break
-                    else:
-                        self.maze[point[1]][point[0]+1] = self.WALL
-                        self.maze[point[1]][point[0]+2] = self.WALL
-                        extend_wall.append([point[0]+2,point[1]])
-                        point = [point[0]+2,point[1]]
-                elif direction == 2:
-                    if self.maze[point[1]+2][point[0]] == self.WALL:
-                        self.maze[point[1]+1][point[0]] = self.WALL
-                        break
-                    else:
-                        self.maze[point[1]+1][point[0]] = self.WALL
-                        self.maze[point[1]+2][point[0]] = self.WALL
-                        extend_wall.append([point[0],point[1]+2])
-                        point = [point[0],point[1]+2]
-                elif direction == 3:
-                    if self.maze[point[1]][point[0]-2] == self.WALL:
-                        self.maze[point[1]][point[0]-1] = self.WALL
-                        break
-                    else:
-                        self.maze[point[1]][point[0]-1] = self.WALL
-                        self.maze[point[1]][point[0]-2] = self.WALL
-                        extend_wall.append([point[0]-2,point[1]])
-                        point = [point[0]-2,point[1]]
-        return self.maze
-
-class Map(Maze):
-    EVENT = 2
-    
-    def __init__(self, width, height, obs, evt, seed=0):
-        super().__init__(width, height, seed)
-        self.map = self.set_maze_kabenobashi()
-        self.obs = obs
-        self.evt = evt
-    
-    def set_map(self):
-        ostack = deque()
-        pstack = deque()
-        for y in range(1, self.height-1,):
-            for x in range(1, self.width-1,):
-                if self.map[y][x] == self.WALL:
-                    ostack.append([x,y])
-                else:
-                    pstack.append([x,y])
-        while True:
-            if len(ostack) <= self.obs:
-                break
-            random.shuffle(ostack)
-            point = ostack.pop()
-            self.maze[point[1]][point[0]] = self.PATH
-        for _ in range(self.evt):
-            random.shuffle(pstack)
-            point = pstack.pop()
-            self.maze[point[1]][point[0]] = self.EVENT
-        return self.map
-
-    def print_map(self):
-        for col in self.map:
-            for cell in col:
-                if cell == self.WALL:
-                    print('#', end='')
-                elif cell == self.PATH:
-                    print(' ', end='')
-                elif cell == self.EVENT:
-                    print('o', end='')
-            print()
-
-
-
-
-
-
-#"""
-import pygame
+import pygame, sys
 from pygame.locals import *
-import sys
 
-#定数設定
-GS = 20 * 2                     #グリッドサイズ
-ROW = 2 * 5 + 1                        #行
-COL = 2 * 10 + 1                        #列
-HBL = 60                        #横の空白の幅(左)
-HBR = 1080 - HBL - GS * COL                       #横の空白の幅(右)
-VBT = 60                        #縦の空白の幅(上)
-VBB = 720 - VBT - GS * ROW                       #縦の空白の幅(下)
-WIDTH = HBL + GS * COL + HBR    #ウィンドウの横幅 (とりあえず1080)
-HEIGHT = VBT + GS * ROW + VBB   #ウィンドウの縦幅 (とりあえず720)
+#各変数の初期値設定
+h = 9     #ステージの行数
+w = 11     #ステージの列数
+gs = 40     #1マスの長さ
+h_blank = 150     #縦の空白部分
+w_blank = 200     #横の空白部分
+height = (h + 2) * gs + h_blank + (h_blank - 60)    #ウィンドウの高さ．式キモいけど見逃して．
+width = (w + 2) * gs + w_blank * 2     #ウィンドウの長さ．同上
+px = 1     #px, pyはプレイヤーの初期位置．とりあえず左上のマスにしとく
+py = 1
+stage = []     #ステージを管理する配列
+running = True     #メインループ回すとき，この変数使うのが定番らしい．あまり気にしなくていい
 
+#各色の定義
+black = (0, 0, 0)
+white = (255, 255, 255)
+red = (255, 0, 0)
+blue = (0, 0, 255)
+brown = (115, 66, 41)
+orange = (233, 168, 38)
+gray = (127, 127, 127)
 
-#pygameのセットアップ
-pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT)) #ウィンドウを作成
-pygame.display.set_caption("NANKA GAME") #ウィンドウの名前をゲーム名「NANKA GAME」に設定
-clock = pygame.time.Clock()
+#0が空白マス，1が壁，2がイベントマス, "player"がプレイヤーの色
+colors = {0:black, 1:brown, 2:orange, "player":blue}
 
-class Player:
+#ステージ生成
+def stage_create():
+    global stage
     
-    #プレイヤー位置のセットアップ
-    def __init__(self, pos):
-        self.pos = pos
-        self.outline = "black"
-        self.fill = "royal blue"
-        self.keypress = False
-        self.count = 0
-        self.keylevel = 3
-    
-    #プレイヤー位置のアップデート
-    def update(self, screen):
-        pos = (HBL + self.pos.x * GS + GS // 2, VBT + self.pos.y * GS + GS // 2)
-        rad = GS // 2
-        pygame.draw.circle(screen, self.outline, pos, rad)
-        pygame.draw.circle(screen, self.fill, pos, rad - 1)
-        #"""
-        keys = pygame.key.get_pressed()
+    #ステージの配列の作成
+    stage = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+             [1, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 1],
+             [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+             [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+             [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+             [1, 0, 0, 1, 0, 2, 0, 0, 1, 1, 1, 0, 1],
+             [1, 0, 0, 1, 0, 0, 0, 0, 1, 2, 1, 0, 1],
+             [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+             [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+             [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+    """
+    理想はstage_createの引数に階層とか入れることでそのステージの配列を返すような関数を作りたい．
+    別に作っといてモジュールとしてimportするのもアリかもね．
+    ちなみにこの配列形式を採用した理由としては，視覚的に見やすくて簡単に変更出来るからなんだけど,
+    ステージが大きくなればなるほど大変になるので要検討．
+    """
+
+#プレイヤー操作
+def player(key):
+    global px, py
+    old_x, old_y = px, py     #移動前のプレイヤーの場所を管理する変数
+
+    #押されたキーに対する操作
+    if key == K_a or key == K_LEFT:
+        px -= 1
+    elif key == K_d or key == K_RIGHT:
+        px += 1
+    elif key == K_w or key == K_UP:
+        py -= 1
+    elif key == K_s or key == K_DOWN:
+        py += 1
+
+    #移動先のマスに対する操作
+    if stage[py][px] == 1:     #壁のとき
+        px, py = old_x, old_y
+
+
+#メイン関数
+def main():
+    global px, py
+    pygame.init()     #おまじない．気にしなくていい
+    pygame.display.set_caption("ishida' game")     #ウィンドウの名前を指定できます
+    screen = pygame.display.set_mode((width, height))     #ウィンドウ作成
+    stage_create()     #ステージを管理する配列を作成
+
+    #メイン関数
+    while running:
+        screen.fill(gray)     #背景を全部灰色にする
+        #ステージ部分の背景を白にする．これも式キモいけど許して
+        pygame.draw.rect(screen, white, (w_blank, h_blank, (w + 2) * gs, (h + 2) * gs))
+
+        #ステージを描画する
+        font_s = pygame.font.SysFont("ヒラキノ角コシックw1", 25)     #座標を描画するフォントの設定
         
-        if not self.keypress and sum(keys):
-            self.keypress = True
-            self.count = 10
-        elif self.keypress and sum(keys):
-            self.count += self.keylevel
-            if self.count >= 10:
-                self.count = 0
-                x = int(self.pos.x)
-                y = int(self.pos.y)
-                
-                if keys[K_w] or keys[K_UP]:
-                    if 0 < y and not(MAP.map[y-1][x] == MAP.WALL):
-                        self.pos.y -= 1
-                        #time.sleep(0.01)
-                elif keys[K_a] or keys[K_LEFT]:
-                    if 0 < x and not(MAP.map[y][x-1] == MAP.WALL):
-                        self.pos.x -= 1
-                        #time.sleep(0.01)
-                elif keys[K_s] or keys[K_DOWN]:
-                    if y < ROW - 1 and not(MAP.map[y+1][x] == MAP.WALL):
-                        self.pos.y += 1
-                        #time.sleep(0.01)
-                elif keys[K_d] or keys[K_RIGHT]:
-                    if x < COL - 1 and not(MAP.map[y][x+1] == MAP.WALL):
-                        self.pos.x += 1
-                        #time.sleep(0.01)
-                #"""
-        elif self.keypress:
-            self.keypress = False
+        for y in range(h + 2):
+            for x in range(w + 2):
+                state = stage[y][x]     #マスの状態を管理する変数
 
-#変数設定
-MAP = Map(COL, ROW, 50, 10)
-MAP.set_map()
+                if state == 0:     #マスが空白なら枠線作る
+                    pygame.draw.rect(screen, colors[state],
+                                     (x * gs + w_blank, y * gs + h_blank, gs, gs), 1)
+                elif state == 1:     #マスが壁なら壁を描写する
+                    pygame.draw.rect(screen, colors[state],
+                                     (x * gs + w_blank, y * gs + h_blank, gs, gs))
+                elif state == 2:     #マスがイベントマスならそれも描く描くしかじか
+                    pygame.draw.rect(screen, colors[state],
+                                     (x * gs + w_blank, y * gs + h_blank, gs, gs))
 
-#ゲーム画面の状態を管理する変数を設定
-STATE_TITLE = 0 #タイトル画面
-STATE_MAP = 1 #マップを表示する画面
-game_state = STATE_TITLE #ゲーム画面の状態をタイトル画面に設定
+                #x軸の座標の描画.式キモめ
+                if y == 0 and x >= 1 and x <= w:
+                    text_s = font_s.render(f"{x}", True, white)
+                    text_s_rect = text_s.get_rect(center = (
+                        (x * gs + w_blank) + gs // 2 - 1, (y * gs + h_blank) + gs // 2))
+                    screen.blit(text_s, text_s_rect)
 
-#ボタン描画関数
-def draw_button(screen, rect, text, font, bg_color, text_color):
-    pygame.draw.rect(screen, bg_color, rect)
-    rendered_text = font.render(text, True, text_color)
-    screen.blit(rendered_text, (rect.x + (rect.width - rendered_text.get_width()) // 2,
-                                rect.y + (rect.height - rendered_text.get_height()) // 2))
+                #y軸の座標の描画．式キモめ2
+                if x == 0 and y >= 1 and y <= h:
+                    text_s = font_s.render(f"{chr(64+y)}", True, white)
+                    text_s_rect = text_s.get_rect(center = (
+                        (x * gs + w_blank) + gs // 2, (y * gs + h_blank) + gs // 2))
+                    screen.blit(text_s, text_s_rect)
 
-#ボタン描画
-start_button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2, 200, 50)
+        #プレイヤーを描画する.これも式キモいね，ごめんね，頑張ってね
+        pygame.draw.circle(screen, colors["player"],
+                           (px * gs + w_blank + gs // 2, py * gs + h_blank + gs // 2), 15)
 
+        #メニューの描画
+        pygame.draw.rect(screen, white, (0, 0, width, 60))     #メニューの背景を白色に
+        font_m = pygame.font.SysFont("ヒラキノ角コシックw1", 40)     #メニューのフォントの設定
+        text_m = font_m.render("ステージ1：1F   フロア数：5   制限時間：126s", True, black)
+        screen.blit(text_m, (22, 10))     #いい感じのところに配置
 
-#タイトル画面の描画関数定義
-def draw_title_screen(screen, start_button_rect):
-    screen.fill((0, 0, 0))  # 背景を黒にする
-    font = pygame.font.Font(None, 74) #日本語のフォントを導入してください（やり方わからんby 石田)
-    text = font.render("NANKA GAME", True, (255, 255, 255)) 
-    screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 3 - text.get_height() // 2))
+        pygame.display.update()     #今までの変更を全部反映させる
 
-    # ボタンを描画
-    button_font = pygame.font.Font(None, 50)　#日本語のフォントを導入してください（やり方わからんby 石田)
-    draw_button(screen, start_button_rect, "Game Start", button_font, (50, 200, 50), (255, 255, 255)) #文字をゲームスタートに変更してください
-    
-    pygame.display.flip()
-
-
-
-
-
-#MAP.print_map()
-bgcolor = "white"                           #背景色
-gridlinecolor = "black"                     #マス枠色
-normalgridcolor = "white"                   #通常マス色
-eventgridcolor = "sky blue"                 #イベントマス色
-wallcolor = "grey30"                        #壁色
-player = Player(pygame.Vector2(1, 1))       #プレイヤーの位置
-keylevel = 1                                #キーレベル
-
-#ループさせる
-running = True
-
-while running:
-    # イベントの取得
-    for event in pygame.event.get():
-        # Xボタンで終了
-        if event.type == QUIT:
-            running = False
-
-        # マウスクリックイベントの検出
-        if event.type == MOUSEBUTTONDOWN:
-            if game_state == STATE_TITLE:
-                if start_button_rect.collidepoint(event.pos):
-                    game_state = STATE_MAP
-
-        # ゲームプレイ中のキー操作を処理
-        if event.type == KEYDOWN:
-            if game_state == STATE_MAP:
-                if event.key in [K_w, K_a, K_s, K_d, K_UP, K_LEFT, K_DOWN, K_RIGHT]:
-                    pass
-
-    # 状態に応じた描画処理
-    if game_state == STATE_TITLE:
-        draw_title_screen(screen, start_button_rect)
-    elif game_state == STATE_MAP:
-        # 背景
-        screen.fill(bgcolor)
-        outline = Rect(HBL - 1, VBT - 1, GS * COL + 2, GS * ROW + 2)
-        pygame.draw.rect(screen, gridlinecolor, outline)
-        for h in range(ROW):
-            for w in range(COL):
-                outline = Rect(HBL + GS * w, VBT + GS * h, GS, GS)
-                fill = Rect(HBL + 1 + GS * w, VBT + 1 + GS * h, GS - 2, GS - 2)
-                pygame.draw.rect(screen, gridlinecolor, outline)
-                if MAP.map[h][w] == MAP.PATH:
-                    pygame.draw.rect(screen, normalgridcolor, fill)
-                elif MAP.map[h][w] == MAP.EVENT:
-                    pygame.draw.rect(screen, eventgridcolor, fill)
-                elif MAP.map[h][w] == MAP.WALL:
-                    pygame.draw.rect(screen, wallcolor, fill)
-        player.update(screen)  # プレイヤー位置のアップデート
-        pygame.display.flip()  # ディスプレイのアップデート
-
-    clock.tick(60)  # FPSを60に設定する
-
-pygame.quit()
-
-
-#"""
+        #イベント処理
+        for event in pygame.event.get():
+            if event.type == QUIT:     #ウィンドウが閉じられたら終了
+                pygame.quit()
+                sys.exit()
+            elif event.type == KEYDOWN:     #移動キー押されたら動こう
+                player(event.key)
+        
+#実行
+if __name__ == "__main__":
+    main()
