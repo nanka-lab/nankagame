@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, datetime
 from pygame.locals import *
 
 class Player():
@@ -66,6 +66,9 @@ class Game():
         self.player = Player() #Playerのインスタンスを作成
         self.state = 0 #0がタイトル画面，1がゲーム画面，2が目標リスト画面
         self.running = True #メインループ回すとき，この変数使うのが定番らしい．あまり気にしなくていい
+        self.clock = pygame.time.Clock() #時間オブジェクトの作成．fpsを管理するのに使う
+        self.time = 0 #管理している時間．0はまだ管理している時間がない状態．
+        self.timeLimit = 360 #制限時間
 
         #各色の定義
         self.black = (0, 0, 0)
@@ -142,10 +145,20 @@ class Game():
                 pygame.draw.circle(self.screen, self.stage.colors["player"],
                                    (self.player.x * self.stage.gridSize + self.stage.widthBlank + self.stage.gridSize // 2, self.player.y * self.stage.gridSize + self.stage.heightBlank + self.stage.gridSize // 2), 15)
 
+                #時間管理
+                now = datetime.datetime.now() #現在時刻の取得
+                if self.time == 0: #管理する時間が未設定なら設定してあげる
+                    self.time = now
+                elif self.time.second - now.second != 0: #管理している時間と今の時間に差があったら
+                    self.timeLimit = self.timeLimit - 1 #制限時間を1s減らす
+                    self.time = now
+                if self.timeLimit == 0: #制限時間が0になったら
+                    self.state = 3 #ゲームオーバー画面に移行
+
                 #メニューの描画
                 pygame.draw.rect(self.screen, self.white, (0, 0, self.width, 60)) #メニューの背景を白色に
                 menuFont = pygame.font.SysFont("ヒラキノ角コシックw1", 40) #メニューのフォントの設定
-                menuText = menuFont.render("ステージ1：1F   フロア数：5   制限時間：126s", True, self.black)
+                menuText = menuFont.render(f"ステージ1：1F   フロア数：5   制限時間：{self.timeLimit}s", True, self.black)
                 self.screen.blit(menuText, (22, 10)) #いい感じのところに配置
 
                 #目標確認ボタン作ります
@@ -172,6 +185,13 @@ class Game():
                 backButtonTextRect = backButtonText.get_rect(center = (10 + 60 // 2, 10 + 30 // 2))
                 self.screen.blit(backButtonText, backButtonTextRect)
 
+            elif self.state == 3: #ゲームオーバー画面の描写
+                self.screen.fill(self.black) #背景を真っ黒にする
+                gameoverFont = pygame.font.SysFont("ヒラキノ角コシックw1", 50) #フォント設定
+                gameoverText = gameoverFont.render("げーむおーばー", True, self.red)
+                gameoverTextRect = gameoverText.get_rect(center = (self.width // 2, self.height // 2))
+                self.screen.blit(gameoverText, gameoverTextRect)
+
             pygame.display.update() #今までの変更を全部反映させる
 
             #イベント処理
@@ -192,6 +212,8 @@ class Game():
                     elif self.state == 2: #目標確認画面なら反応
                         if backButton.collidepoint(event.pos): #ボタンがクリックされたら
                             self.state = 1 #ゲーム画面に移行
+
+            self.clock.tick(60) #60fps
                             
 #メイン関数
 def main():
