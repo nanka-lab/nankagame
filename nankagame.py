@@ -93,14 +93,14 @@ class Game():
                 self.screen.fill(self.black) #背景を全部黒にして
 
                 #タイトル作ります
-                titleFont = pygame.font.SysFont("ヒラキノ角コシックw1", 74) #タイトルを描画するフォントを設定
+                titleFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 74) #タイトルを描画するフォントを設定
                 titleText = titleFont.render("なんかげーむ", True, self.white)
                 titleTextRect = titleText.get_rect(center = (self.width // 2, self.height // 2 - 150))
                 self.screen.blit(titleText, titleTextRect)
 
                 #スタートボタン作ります
                 startButton = pygame.draw.rect(self.screen, self.green, (self.width // 2 - 100, self.height // 2, 200, 50))
-                startButtonFont = pygame.font.SysFont("ヒラキノ角コシックw1", 28) #ボタンのフォント設定
+                startButtonFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 28) #ボタンのフォント設定
                 startButtonText = startButtonFont.render("げーむすたーと", True, self.black)
                 startButtonTextRect = startButtonText.get_rect(center = (self.width // 2, self.height // 2 + 25))
                 self.screen.blit(startButtonText, startButtonTextRect)
@@ -145,7 +145,7 @@ class Game():
                 pygame.draw.rect(self.screen, self.white, (self.stage.widthBlank, self.stage.heightBlank, (self.stage.width + 2) * self.stage.gridSize, (self.stage.height + 2) * self.stage.gridSize))
 
                 #ステージを描画する
-                stageFont = pygame.font.SysFont("ヒラキノ角コシックw1", 25) #座標を描画するフォントの設定
+                stageFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 25) #座標を描画するフォントの設定
 
                 for y in range(self.stage.height + 2):
                     for x in range(self.stage.width + 2):
@@ -191,13 +191,13 @@ class Game():
 
                 #メニューの描画
                 pygame.draw.rect(self.screen, self.white, (0, 0, self.width, 60)) #メニューの背景を白色に
-                menuFont = pygame.font.SysFont("ヒラキノ角コシックw1", 40) #メニューのフォントの設定
+                menuFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 40) #メニューのフォントの設定
                 menuText = menuFont.render(f"ステージ1：1F   フロア数：5   制限時間：{self.timeLimit}s", True, self.black)
                 self.screen.blit(menuText, (22, 10)) #いい感じのところに配置
 
                 #目標確認ボタン作ります
                 goalButton = pygame.draw.rect(self.screen, self.black, (self.width - 90, 70, 80, 40))
-                goalButtonFont = pygame.font.SysFont("ヒラキノ角コシックw1", 28) #ボタンのフォント設定
+                goalButtonFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 28) #ボタンのフォント設定
                 goalButtonText = goalButtonFont.render("目標", True, self.white)
                 goalButtonTextRect = goalButtonText.get_rect(center = (self.width - 90 + 80 // 2, 70 + 40 // 2))
                 self.screen.blit(goalButtonText, goalButtonTextRect)
@@ -207,21 +207,21 @@ class Game():
 
                 #目標確認リスト作ります
                 goalList = pygame.draw.rect(self.screen, self.white, (50, 50, self.width - 100, self.height - 100))
-                goalListFont = pygame.font.SysFont("ヒラキノ角コシックw1", 50) #フォント設定
+                goalListFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 50) #フォント設定
                 goalListText = goalListFont.render("ここでデータベース班の出番だ！", True, self.black)
                 goalListTextRect = goalListText.get_rect(center = (self.width // 2, self.height // 2))
                 self.screen.blit(goalListText, goalListTextRect)
 
                 #戻るボタンを作ります
                 backButton = pygame.draw.rect(self.screen, self.black, (10, 10, 60, 30))
-                backButtonFont = pygame.font.SysFont("ヒラキノ角コシックw1", 25) #フォント設定
+                backButtonFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 25) #フォント設定
                 backButtonText = backButtonFont.render("戻る", True, self.white)
                 backButtonTextRect = backButtonText.get_rect(center = (10 + 60 // 2, 10 + 30 // 2))
                 self.screen.blit(backButtonText, backButtonTextRect)
 
             elif self.state == "gameover": #ゲームオーバー画面の描写
                 self.screen.fill(self.black) #背景を真っ黒にする
-                gameoverFont = pygame.font.SysFont("ヒラキノ角コシックw1", 50) #フォント設定
+                gameoverFont = pygame.font.Font("ヒラギノ角ゴシック W1.ttc", 50) #フォント設定
                 gameoverText = gameoverFont.render("げーむおーばー", True, self.red)
                 gameoverTextRect = gameoverText.get_rect(center = (self.width // 2, self.height // 2))
                 self.screen.blit(gameoverText, gameoverTextRect)
