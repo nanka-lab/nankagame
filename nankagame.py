@@ -64,7 +64,7 @@ class Game():
         #各変数の初期値設定
         self.stage = Stage() #Stageのインスタンスを作成
         self.player = Player() #Playerのインスタンスを作成
-        self.state = 0 #0がタイトル画面，1がゲーム画面，2が目標リスト画面
+        self.state = "title"
         self.running = True #メインループ回すとき，この変数使うのが定番らしい．あまり気にしなくていい
         self.clock = pygame.time.Clock() #時間オブジェクトの作成．fpsを管理するのに使う
         self.time = 0 #管理している時間．0はまだ管理している時間がない状態．
@@ -89,7 +89,7 @@ class Game():
     
     def run(self):
         while self.running:
-            if self.state == 0: #タイトル画面の描写
+            if self.state == "title": #タイトル画面の描写
                 self.screen.fill(self.black) #背景を全部黒にして
 
                 #タイトル作ります
@@ -105,7 +105,41 @@ class Game():
                 startButtonTextRect = startButtonText.get_rect(center = (self.width // 2, self.height // 2 + 25))
                 self.screen.blit(startButtonText, startButtonTextRect)
 
-            elif self.state == 1: #ゲーム画面の描写
+            elif self.state == "stageSelect": #ステージセレクト画面の描写
+                self.screen.fill(self.gray) #背景を全部灰色にする
+                stageButtonFont = pygame.font.SysFont("ヒラキノ角コシックw1", 20) #フォント設定
+
+                #ステージ1のボタンの描写
+                stage1Button = pygame.draw.rect(self.screen, self.white,
+                                                (30, 30, (self.width - 120) // 3, self.height - 60))
+                stage1ButtonText = stageButtonFont.render("今はここしか選べないよ", True, self.black)
+                stage1ButtonTextRect = stage1ButtonText.get_rect(center =
+                                                                (30 + ((self.width - 120) // 3) // 2,
+                                                                (30 + (self.height - 60) // 2)))
+                self.screen.blit(stage1ButtonText, stage1ButtonTextRect)
+
+                #ステージ2のボタンの描写
+                stage2Button = pygame.draw.rect(self.screen, self.white,
+                                                (60 + (self.width - 120) // 3, 30,
+                                                 (self.width - 120) // 3, self.height - 60))
+                stage2ButtonText = stageButtonFont.render("選べないよ", True, self.black)
+                stage2ButtonTextRect = stage2ButtonText.get_rect(center =
+                                                                (60 + 3 * ((self.width - 120) // 3) // 2,
+                                                                (30 + (self.height - 60) // 2)))
+                self.screen.blit(stage2ButtonText, stage2ButtonTextRect)
+
+                #ステージ3のボタンの描写
+                stage3Button = pygame.draw.rect(self.screen, self.white,
+                                                (90 + 2 * (self.width - 120) // 3, 30,
+                                                 (self.width - 120) // 3, self.height - 60))
+                stage3ButtonText = stageButtonFont.render("選べないよ", True, self.black)
+                stage3ButtonTextRect = stage3ButtonText.get_rect(center =
+                                                                (90 + 5 * ((self.width - 120) // 3) // 2,
+                                                                (30 + (self.height - 60) // 2)))
+                self.screen.blit(stage3ButtonText, stage3ButtonTextRect)
+                
+
+            elif self.state == "game": #ゲーム画面の描写
                 self.screen.fill(self.gray) #背景を全部灰色にする
                 #ステージ部分の背景を白にする．これも式キモいけど許して
                 pygame.draw.rect(self.screen, self.white, (self.stage.widthBlank, self.stage.heightBlank, (self.stage.width + 2) * self.stage.gridSize, (self.stage.height + 2) * self.stage.gridSize))
@@ -153,7 +187,7 @@ class Game():
                     self.timeLimit = self.timeLimit - 1 #制限時間を1s減らす
                     self.time = now
                 if self.timeLimit == 0: #制限時間が0になったら
-                    self.state = 3 #ゲームオーバー画面に移行
+                    self.state = "gameover" #ゲームオーバー画面に移行
 
                 #メニューの描画
                 pygame.draw.rect(self.screen, self.white, (0, 0, self.width, 60)) #メニューの背景を白色に
@@ -168,7 +202,7 @@ class Game():
                 goalButtonTextRect = goalButtonText.get_rect(center = (self.width - 90 + 80 // 2, 70 + 40 // 2))
                 self.screen.blit(goalButtonText, goalButtonTextRect)
 
-            elif self.state == 2: #目標確認画面の描写
+            elif self.state == "goalList": #目標確認画面の描写
                 self.screen.fill(self.gray) #背景を全部灰色にする
 
                 #目標確認リスト作ります
@@ -185,7 +219,7 @@ class Game():
                 backButtonTextRect = backButtonText.get_rect(center = (10 + 60 // 2, 10 + 30 // 2))
                 self.screen.blit(backButtonText, backButtonTextRect)
 
-            elif self.state == 3: #ゲームオーバー画面の描写
+            elif self.state == "gameover": #ゲームオーバー画面の描写
                 self.screen.fill(self.black) #背景を真っ黒にする
                 gameoverFont = pygame.font.SysFont("ヒラキノ角コシックw1", 50) #フォント設定
                 gameoverText = gameoverFont.render("げーむおーばー", True, self.red)
@@ -199,19 +233,27 @@ class Game():
                 if event.type == QUIT: #ウィンドウが閉じられたら終了
                     pygame.quit()
                     sys.exit()
+                    
                 elif event.type == KEYDOWN: #移動キー押されたら動こう
-                    if self.state == 1: #ゲーム画面ならプレイヤー移動
+                    if self.state == "game": #ゲーム画面ならプレイヤー移動
                         self.player.move(event.key, self.stage.stage)
+                        
                 elif event.type == MOUSEBUTTONDOWN:
-                    if self.state == 0: #タイトル画面なら反応
+                    if self.state == "title": #タイトル画面なら反応
                         if startButton.collidepoint(event.pos): #ボタンがクリックされたら
-                            self.state = 1 #ゲーム画面に移行
-                    elif self.state == 1: #ゲーム画面なら反応
+                            self.state = "stageSelect" #ステージセレクト画面に移行
+
+                    elif self.state == "stageSelect": #ステージセレクト画面なら反応
+                        if stage1Button.collidepoint(event.pos):
+                            self.state = "game"
+                            
+                    elif self.state == "game": #ゲーム画面なら反応
                         if goalButton.collidepoint(event.pos): #ボタンがクリックされたら
-                            self.state = 2 #目標確認画面に移行
-                    elif self.state == 2: #目標確認画面なら反応
+                            self.state = "goalList" #目標確認画面に移行
+                            
+                    elif self.state == "goalList": #目標確認画面なら反応
                         if backButton.collidepoint(event.pos): #ボタンがクリックされたら
-                            self.state = 1 #ゲーム画面に移行
+                            self.state = "game" #ゲーム画面に移行
 
             self.clock.tick(60) #60fps
                             
