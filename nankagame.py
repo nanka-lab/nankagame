@@ -113,10 +113,10 @@ class Game():
 
             elif self.state == "stageSelect": #ステージセレクト画面の描写
                 self.screen.fill(self.gray) #背景を全部灰色にする
-                stageButtonFont = pygame.font.SysFont("ヒラキノ角コシックw1", 20) #フォント設定
+                stageButtonFont = pg.font.SysFont("ヒラキノ角コシックw1", 20) #フォント設定
 
                 #ステージ1のボタンの描写
-                stage1Button = pygame.draw.rect(self.screen, self.white,
+                stage1Button = pg.draw.rect(self.screen, self.white,
                                                 (30, 30, (self.width - 120) // 3, self.height - 60))
                 stage1ButtonText = stageButtonFont.render("今はここしか選べないよ", True, self.black)
                 stage1ButtonTextRect = stage1ButtonText.get_rect(center =
@@ -125,7 +125,7 @@ class Game():
                 self.screen.blit(stage1ButtonText, stage1ButtonTextRect)
 
                 #ステージ2のボタンの描写
-                stage2Button = pygame.draw.rect(self.screen, self.white,
+                stage2Button = pg.draw.rect(self.screen, self.white,
                                                 (60 + (self.width - 120) // 3, 30,
                                                  (self.width - 120) // 3, self.height - 60))
                 stage2ButtonText = stageButtonFont.render("選べないよ", True, self.black)
@@ -135,7 +135,7 @@ class Game():
                 self.screen.blit(stage2ButtonText, stage2ButtonTextRect)
 
                 #ステージ3のボタンの描写
-                stage3Button = pygame.draw.rect(self.screen, self.white,
+                stage3Button = pg.draw.rect(self.screen, self.white,
                                                 (90 + 2 * (self.width - 120) // 3, 30,
                                                  (self.width - 120) // 3, self.height - 60))
                 stage3ButtonText = stageButtonFont.render("選べないよ", True, self.black)
