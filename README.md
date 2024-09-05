@@ -3,6 +3,7 @@
 @ディレクトリの構造
 
 nankagame/
+
 	-assets/　#静的資源、素材
 
 		-fonts
@@ -12,7 +13,7 @@ nankagame/
 		-概要資料.pttx
 
 	-sql/	#拡張子.sql
- 		kari.sql
+ 		-kari.sql
 
 	-src/   #ソースコード
 		
