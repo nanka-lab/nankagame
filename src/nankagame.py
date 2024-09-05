@@ -2,10 +2,16 @@ import pygame as pg
 import sys
 import datetime
 import os
-from pygame.locals import *
+from pygame.locals import *     #pygameの定数まとめ
 
-this_dir = os.path.dirname(__file__) #このファイルのディレクトリ名を取得
-font_path = os.path.join(this_dir, "assets", "fonts", "ヒラギノ角ゴシック W1.ttc") #フォントファイルのパスを取得
+if __name__ != "__main__":      #モジュールとして実行された時
+    from . import tools         #相対インポート
+else:                           #スクリプトとして実行された時
+    import tools                #絶対インポート
+
+#フォントファイルのパスを取得
+root_dir = os.path.abspath(tools.find_dir_path("nankagame")) #リポジトリのパスを取得
+font_path = os.path.join(root_dir, "assets", "fonts", "ヒラギノ角ゴシック W1.ttc") #フォントファイルのパスを取得
 
 class Player():
     def __init__(self):
@@ -76,17 +82,19 @@ class Game():
         self.time = 0 #管理している時間．0はまだ管理している時間がない状態．
         self.timeLimit = 360 #制限時間
 
-        #各色の定義
-        self.black = (0, 0, 0)
-        self.white = (255, 255, 255)
-        self.red = (255, 0, 0)
-        self.green = (0, 255, 0)
-        self.blue = (0, 0, 255)
-        self.brown = (115, 66, 41)
-        self.orange = (233, 168, 38)
-        self.gray = (127, 127, 127)
+        #各色の定義       R    G    B
+        self.black  = (  0,   0,   0)
+        self.white  = (255, 255, 255)
+        self.red    = (255,   0,   0)
+        self.green  = (  0, 255,   0)
+        self.blue   = (  0,   0, 255)
+        self.brown  = (115,  66,  41)
+        self.orange = (233, 168,  38)
+        self.gray   = (127, 127, 127)
+
+        #ウィンドウジオメトリ
         self.height = (self.stage.height + 2) * self.stage.grid_size + self.stage.height_blank + (self.stage.height_blank - 60) #ウィンドウの高さ．式キモいけど見逃して．
-        self.width = (self.stage.width + 2) * self.stage.grid_size + self.stage.width_blank * 2               #ウィンドウの長さ．同上
+        self.width  = (self.stage.width + 2) * self.stage.grid_size + self.stage.width_blank * 2               #ウィンドウの長さ．同上
 
         pg.init() #おまじない．気にしなくていい
         pg.display.set_caption("なんかげーむ") #ウィンドウの名前を指定できます
@@ -268,6 +276,3 @@ def main():
     game = Game()
     game.run()
 
-#実行
-if __name__ == "__main__":
-    main()

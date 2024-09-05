@@ -6,17 +6,31 @@ nankagame/
 
 	-assets/　#静的資源、素材
 
-		-fonts
+		-fonts/
 
 	-docs/ #資料系
 
 		-概要資料.pttx
 
 	-sql/	#拡張子.sql
+
  		-kari.sql
 
 	-src/   #ソースコード
 		
+                -__init__.py
+
+		-classes.py
+
+		-consts.py
+
+		-events.py
+
+		-nankagame.py
+
+		-tools.py
+
 		-data/
+
 			-maps/
 		
