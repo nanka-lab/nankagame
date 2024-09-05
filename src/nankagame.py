@@ -94,7 +94,7 @@ class Game():
 
         #ウィンドウジオメトリ
         self.height = (self.stage.height + 2) * self.stage.grid_size + self.stage.height_blank + (self.stage.height_blank - 60) #ウィンドウの高さ．式キモいけど見逃して．
-        self.width  = (self.stage.width + 2) * self.stage.grid_size + self.stage.width_blank * 2               #ウィンドウの長さ．同上
+        self.width = (self.stage.width + 2) * self.stage.grid_size + self.stage.width_blank * 2               #ウィンドウの長さ．同上
 
         pg.init() #おまじない．気にしなくていい
         pg.display.set_caption("なんかげーむ") #ウィンドウの名前を指定できます
