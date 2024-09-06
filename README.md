@@ -1,11 +1,21 @@
+@testコードの実行方法
+
+nankagame/ディレクトリにいる状態でターミナルで$pytest
+
+@依存関係のインストール
+
+#nankagame/
+
+$chmod +x setup.sh
+$./setup.sh
+
 @ゲームの始め方
 
 main.pyを実行
 
 @操作方法
 
-矢印キー
-
+矢印キー、wasdキー
 @ディレクトリの構造
 
 nankagame/
