@@ -17,7 +17,7 @@ jobs:
       - name: リポジトリ内のコードを取得
         uses: actions/checkout@v3
 
-      - name: 使用するpythonのバージョンを指定してセットアップ
+      - name:  pythonのバージョンを指定してセットアップ
 	uses: actions/setup-python@v4
 	with:
 	  python-version: '3.11'
