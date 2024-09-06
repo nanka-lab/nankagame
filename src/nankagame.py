@@ -1,11 +1,7 @@
 import pygame as pg
 import sys, datetime, os
 from pygame.locals import *     #pygameの定数まとめ
-
-if __name__ != "__main__":      #モジュールとして実行された時、相対インポート
-    from . import tools, classes
-else:                           #スクリプトとして実行された時、絶対インポート
-    import tools, classes
+from . import tools,classes
 
 #フォントファイルのパスを取得
 root_dir = os.path.abspath(tools.find_dir_path("nankagame")) #リポジトリのパスを取得
