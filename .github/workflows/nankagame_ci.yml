@@ -1,4 +1,4 @@
-ame: nankagame_test
+name: nankagame_test
 
 on:
   push:
