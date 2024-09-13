@@ -1,0 +1,5 @@
+#pytestのバージョン
+pytest==7.4.0
+
+#pygameのバージョン
+pygame==2.6.0

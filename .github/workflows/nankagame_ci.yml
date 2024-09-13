@@ -1,0 +1,31 @@
+name: nankagame_test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリ内のコードを取得
+        uses: actions/checkout@v3
+
+      - name: 使用する Python のバージョンを指定してセットアップ
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 依存関係をインストール
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: pytest を実行
+        run: pytest
+
