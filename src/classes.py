@@ -23,32 +23,82 @@ class Player():
         #各変数の初期値設定
         self.x, self.y = self.s.PLAYER_INIT #x, y はプレイヤーの位置。とりあえず左上のマスにしとく。
         self.space = self.game.stage.map[self.y][self.x]
+        self.speed = 1 #移動速度。
+        self.count = 15 #次に移動するまでのフレーム数。実質的な移動速度は (count // speed) となる。
+        self.a_count = 0 #[wasd]_count はそのキーを押して移動してからの現在のフレーム数。別のキーを押すとリセットされるが、時間を置いて同じキーを押す場合のリセットは未実装。
+        self.d_count = 0
+        self.w_count = 0
+        self.s_count = 0
+        self.past_x = None #動かす前のx
+        self.past_y = None #動かす前のy
+
+
     
     #フロア移動の際のxとyの移動
     def up_down(self):
         if self.space % 2 == 0:
             new_space = self.space + 1
             self.y, self.x = tools.find_np_array_index(self.game.stage.map, new_space)
+            self.past_y, self.past_x = self.y, self.x
         else:
             new_space = self.space - 1
             self.y, self.x = tools.find_np_array_index(self.game.stage.map, new_space)
+            self.past_y, self.past_x = self.y, self.x
 
     #プレイヤー操作
-    def move(self, key, stage):
+    def move(self):
         xOld, yOld = self.x, self.y #移動前のプレイヤーの場所を管理する変数
-    
+        keys = pg.key.get_pressed() #それぞれのキーについて押されているかをブール値で表したもの
+
         #押されたキーに対する操作
-        if key == K_a or key == K_LEFT:
+        if keys[K_a] or keys[K_LEFT]:
+            if self.d_count + self.w_count + self.s_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.a_count -= self.speed
+        elif keys[K_d] or keys[K_RIGHT]:
+            if self.a_count + self.w_count + self.s_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.d_count -= self.speed
+        elif keys[K_w] or keys[K_UP]:
+            if self.a_count + self.d_count + self.s_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.w_count -= self.speed
+        elif keys[K_s] or keys[K_DOWN]:
+            if self.a_count + self.d_count + self.w_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.s_count -= self.speed
+
+        if self.a_count < 0:
+            self.past_y, self.past_x = self.y, self.x
             self.x -= 1
-        elif key == K_d or key == K_RIGHT:
+            self.a_count = self.count - 1
+        elif self.d_count < 0:
+            self.past_y, self.past_x = self.y, self.x
             self.x += 1
-        elif key == K_w or key == K_UP:
+            self.d_count = self.count - 1
+        elif self.w_count < 0:
+            self.past_y, self.past_x = self.y, self.x
             self.y -= 1
-        elif key == K_s or key == K_DOWN:
+            self.w_count = self.count - 1
+        elif self.s_count < 0:
+            self.past_y, self.past_x = self.y, self.x
             self.y += 1
+            self.s_count = self.count - 1
     
         #移動先のマスに対する操作
-        if stage[self.y][self.x] == 1: #壁のとき
+        if self.game.stage.map[self.y][self.x] == 1: #壁のとき
             self.x, self.y = xOld, yOld
         self.space = self.game.stage.map[self.y][self.x]
 

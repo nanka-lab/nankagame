@@ -21,9 +21,7 @@ class Game():
         self.time_limit = self.s.TIME_LIMIT #制限時間
         self.stage = classes.Stage(self) #Stageのインスタンスを作成
         self.player = classes.Player(self) #Playerのインスタンスを作成
-        self.past_x = None #動かす前のx
-        self.past_y = None #動かす前のy
-
+        
         pg.init() #おまじない．気にしなくていい
         self.screen = state.Screen()
     
@@ -37,18 +35,14 @@ class Game():
 
             elif self.state == "game": #ゲーム画面の描写
                 self.current_screen = state.GameScreen(self)
-                if self.player.space > 3 and self.player.space % 2 == 0 and (self.past_x, self.past_y) != (self.player.x, self.player.y):
+                if self.player.space > 3 and self.player.space % 2 == 0 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
                     self.current_floor+=1
                     self.stage = classes.Stage(self) #Stageのマップを更新
                     self.player.up_down()
-                    self.past_x = self.player.x
-                    self.past_y = self.player.y
-                elif self.player.space > 3 and self.player.space % 2 == 1 and (self.past_x, self.past_y) != (self.player.x, self.player.y):
+                elif self.player.space > 3 and self.player.space % 2 == 1 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
                     self.current_floor-=1
                     self.stage = classes.Stage(self) #Stageのマップを更新
                     self.player.up_down()
-                    self.past_x = self.player.x
-                    self.past_y = self.player.y
 
             elif self.state == "goalList": #目標確認画面の描写
                 self.current_screen = state.MissionScreen(self.screen)
@@ -76,9 +70,7 @@ class Game():
                     
                 elif event.type == KEYDOWN: #移動キー押されたら動こう
                     if self.state == "game": #ゲーム画面ならプレイヤー移動
-                        self.past_x = self.player.x #移動する前のxを記憶
-                        self.past_y = self.player.y #移動する前のyを記憶
-                        self.player.move(event.key, self.stage.map) #引数にself.stage.mapがあるのは衝突判定用かな？
+                        pass
                         
                 elif event.type == MOUSEBUTTONDOWN:
                     if self.state == "title": #タイトル画面なら反応
@@ -96,7 +88,7 @@ class Game():
                     elif self.state == "goalList": #目標確認画面なら反応
                         if self.current_screen.back_button.collidepoint(event.pos): #ボタンがクリックされたら
                             self.state = "game" #ゲーム画面に移行
-
+            self.player.move()
             self.clock.tick(60) #60fps
                             
 #メイン関数
