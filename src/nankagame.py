@@ -60,7 +60,7 @@ class Game():
 
             elif self.state == "stageSelect": #ステージセレクト画面の描写
                 self.screen.fill(self.gray) #背景を全部灰色にする
-                stageButtonFont = pg.font.SysFont("ヒラキノ角コシックw1", 20) #フォント設定
+                stageButtonFont = pg.font.Font(font_path, 20) #フォント設定
 
                 #ステージ1のボタンの描写
                 stage1Button = pg.draw.rect(self.screen, self.white,
@@ -189,7 +189,7 @@ class Game():
                     
                 elif event.type == KEYDOWN: #移動キー押されたら動こう
                     if self.state == "game": #ゲーム画面ならプレイヤー移動
-                        self.player.move(event.key, self.stage.stage)
+                        pass #self.player.move(event.key, self.stage.stage)
                         
                 elif event.type == MOUSEBUTTONDOWN:
                     if self.state == "title": #タイトル画面なら反応
@@ -207,6 +207,7 @@ class Game():
                     elif self.state == "goalList": #目標確認画面なら反応
                         if backButton.collidepoint(event.pos): #ボタンがクリックされたら
                             self.state = "game" #ゲーム画面に移行
+            self.player.move(self.stage.stage)
 
             self.clock.tick(60) #60fps
                             

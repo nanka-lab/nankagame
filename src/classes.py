@@ -7,20 +7,60 @@ class Player():
         #各変数の初期値設定
         self.x = 1 #x, y はプレイヤーの位置。とりあえず左上のマスにしとく。
         self.y = 1
+        self.speed = 1 #移動速度。
+        self.count = 15 #次に移動するまでのフレーム数。実質的な移動速度は (count // speed) となる。
+        self.a_count = 0 #[wasd]_count はそのキーを押して移動してからの現在のフレーム数。別のキーを押すとリセットされるが、時間を置いて同じキーを押す場合のリセットは未実装。
+        self.d_count = 0
+        self.w_count = 0
+        self.s_count = 0
 
     #プレイヤー操作
-    def move(self, key, stage):
+    def move(self, stage):
         xOld, yOld = self.x, self.y #移動前のプレイヤーの場所を管理する変数
+        keys = pg.key.get_pressed() #それぞれのキーについて押されているかをブール値で表したもの
     
         #押されたキーに対する操作
-        if key == K_a or key == K_LEFT:
+        if keys[K_a] or keys[K_LEFT]:
+            if self.d_count + self.w_count + self.s_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.a_count -= self.speed
+        elif keys[K_d] or keys[K_RIGHT]:
+            if self.a_count + self.w_count + self.s_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.d_count -= self.speed
+        elif keys[K_w] or keys[K_UP]:
+            if self.a_count + self.d_count + self.s_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.w_count -= self.speed
+        elif keys[K_s] or keys[K_DOWN]:
+            if self.a_count + self.d_count + self.w_count:
+                self.a_count = 0
+                self.d_count = 0
+                self.w_count = 0
+                self.s_count = 0
+            self.s_count -= self.speed
+        
+        if self.a_count < 0:
             self.x -= 1
-        elif key == K_d or key == K_RIGHT:
+            self.a_count = self.count - 1
+        elif self.d_count < 0:
             self.x += 1
-        elif key == K_w or key == K_UP:
+            self.d_count = self.count - 1
+        elif self.w_count < 0:
             self.y -= 1
-        elif key == K_s or key == K_DOWN:
+            self.w_count = self.count - 1
+        elif self.s_count < 0:
             self.y += 1
+            self.s_count = self.count - 1
     
         #移動先のマスに対する操作
         if stage[self.y][self.x] == 1: #壁のとき
