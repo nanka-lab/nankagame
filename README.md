@@ -7,6 +7,7 @@ nankagame/ディレクトリにいる状態でターミナルで$pytest
 #nankagame/
 
 $chmod +x setup.sh
+
 $./setup.sh
 
 @ゲームの始め方
