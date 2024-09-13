@@ -3,6 +3,7 @@ import sys, datetime, os
 from pygame.locals import *  
 from . import tools,classes
 from .data import consts as c
+from .data.maps import stage1
 
 #フォントファイルのパスを取得
 root_dir = os.path.abspath(tools.find_dir_path("nankagame")) #リポジトリのパスを取得
@@ -10,10 +11,9 @@ font_path = os.path.join(root_dir, "assets", "fonts", "ヒラギノ角ゴ�
 
 #メインウィンドウの作成
 class Screen():
-    def __init__(self, stage):
-        self.stage = stage
-        self.height = (self.stage.height + 2) * self.stage.grid_size + self.stage.height_blank + (self.stage.height_blank - 60) #ウィンドウの高さ．式キモいけど見逃して．
-        self.width = (self.stage.width + 2) * self.stage.grid_size + self.stage.width_blank * 2               #ウィンドウの長さ．同上
+    def __init__(self):
+        self.width = c.WINDOW_WIDTH
+        self.height = c.WINDOW_HEIGHT
         self.window = pg.display.set_mode((self.width, self.height)) #ウィンドウ作成
         pg.display.set_caption("なんかげーむ") #ウィンドウの名前を指定できます
     def fill(self, color):
@@ -91,6 +91,7 @@ class StageSelect():
 #ゲーム画面の描画
 class GameScreen():
     def __init__(self, game):
+        self.game = game
         self.screen = game.screen.window
         self.width = game.screen.width
         self.height = game.screen.height
@@ -102,47 +103,43 @@ class GameScreen():
     def render(self):
         self.screen.fill(c.GRAY) #背景を全部灰色にする
         #ステージ部分の背景を白にする．これも式キモいけど許して
-        pg.draw.rect(self.screen, c.WHITE, (self.stage.width_blank, self.stage.height_blank, (self.stage.width + 2) * self.stage.grid_size, (self.stage.height + 2) * self.stage.grid_size))
+        pg.draw.rect(self.screen, c.WHITE, (self.stage.width_blank, self.stage.height_blank, (self.stage.column_number + 2) * self.stage.grid_size, (self.stage.row_number + 2) * self.stage.grid_size))
 
         #ステージを描画する
         stage_font = pg.font.Font(font_path, 25) #座標を描画するフォントの設定
-
-        for y in range(self.stage.height + 2):
-            for x in range(self.stage.width + 2):
-                state = self.stage.stage[y][x] #マスの状態を管理する変数
+        for y in range(self.stage.row_number + 2):
+            for x in range(self.stage.column_number + 2):
+                state = self.stage.map[y][x] #マスの状態を管理する変数
 
                 if state == 0: #マスが空白なら枠線作る
-                    pg.draw.rect(self.screen, self.stage.colors[state],
+                    pg.draw.rect(self.screen, self.stage.get_color(state),
                                         (x * self.stage.grid_size + self.stage.width_blank, y * self.stage.grid_size + self.stage.height_blank, self.stage.grid_size, self.stage.grid_size), 1)
-                elif state == 1: #マスが壁なら壁を描写する
-                    pg.draw.rect(self.screen, self.stage.colors[state],
+                else : #マスが壁なら壁を描写する
+                    pg.draw.rect(self.screen, self.stage.get_color(state),
                                         (x * self.stage.grid_size + self.stage.width_blank, y * self.stage.grid_size + self.stage.height_blank, self.stage.grid_size, self.stage.grid_size))
-                elif state == 2: #マスがイベントマスならそれも描く描くしかじか
-                    pg.draw.rect(self.screen, self.stage.colors[state],
-                                        (x * self.stage.grid_size + self.stage.width_blank, y * self.stage.grid_size + self.stage.height_blank, self.stage.grid_size, self.stage.grid_size))
-
+               
                 #x軸の座標の描画．式キモめ
-                if y == 0 and x >= 1 and x <= self.stage.width:
+                if y == 0 and x >= 1 and x <= self.stage.column_number:
                     x_text = stage_font.render(f"{x}", True, c.WHITE)
                     x_text_rect = x_text.get_rect(center = (
                         (x * self.stage.grid_size + self.stage.width_blank) + self.stage.grid_size // 2 - 1, (y * self.stage.grid_size + self.stage.height_blank) + self.stage.grid_size // 2))
                     self.screen.blit(x_text, x_text_rect)
 
                 #y軸の座標の描画．式キモめ2
-                if x == 0 and y >= 1 and y <= self.stage.height:
+                if x == 0 and y >= 1 and y <= self.stage.row_number:
                     y_text = stage_font.render(f"{chr(64+y)}", True, c.WHITE)
                     y_text_rect = y_text.get_rect(center = (
                         (x * self.stage.grid_size + self.stage.width_blank) + self.stage.grid_size // 2, (y * self.stage.grid_size + self.stage.height_blank) + self.stage.grid_size // 2))
                     self.screen.blit(y_text, y_text_rect)
 
         #プレイヤーを描画する．これも式キモいね，ごめんね，頑張ってね
-        pg.draw.circle(self.screen, self.stage.colors["player"],
+        pg.draw.circle(self.screen, c.PLAYER_COLOR,
                             (self.player.x * self.stage.grid_size + self.stage.width_blank + self.stage.grid_size // 2, self.player.y * self.stage.grid_size + self.stage.height_blank + self.stage.grid_size // 2), 15)
 
         #メニューの描画
         pg.draw.rect(self.screen, c.WHITE, (0, 0, self.width, 60)) #メニューの背景を白色に
         menu_font = pg.font.Font(font_path, 40) #メニューのフォントの設定
-        menu_text = menu_font.render(f"ステージ1：1F   フロア数：5   制限時間：{self.time_limit}s", True, c.BLACK)
+        menu_text = menu_font.render(f"ステージ1：{self.game.current_floor}F   フロア数：5   制限時間：{tools.sec_convert_min(self.time_limit)[0]}m{tools.sec_convert_min(self.time_limit)[1]}s", True, c.BLACK)
         self.screen.blit(menu_text, (22, 10)) #いい感じのところに配置
 
         #目標確認ボタン作ります
