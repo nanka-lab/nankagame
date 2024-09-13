@@ -1,5 +1,6 @@
 "ここでお役立ちツールを作成します"
 import os
+import numpy as np
 
 #ディレクトリのパスを返す関数
 #引数1はディレクトリ名
@@ -17,3 +18,8 @@ def find_dir_path(searching_dir):
             break #探索終了
         current_directory = parent_directory #現在ディレクトリを親ディレクトリに移動
     return "{%s}というディレクトリは存在しません。" % searching_dir
+
+#numpyの2次元配列からある数値のインデックス＋1の値を出力する　使用例；MAPの2次元配列にある「3」（プレイヤーのスタート位置）のインデックス＋1（座標）を取得
+def find_np_array_index(array, number):
+    answer_x, answer_y = np.where(array == number)
+    return answer_x.item()+1, answer_y.item()+1

@@ -17,3 +17,7 @@ CYAN         = (  0, 255, 255)
 NEAR_BLACK   = ( 19,  15,  48)
 COMBLUE      = (233, 232, 255)
 GOLD         = (255, 215,   0)
+
+#playerの色
+PLAYER_COLOR = BLUE
+
