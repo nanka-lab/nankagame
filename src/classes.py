@@ -1,12 +1,14 @@
 "ここでオブジェクトを定義します"
 import pygame as pg
 from pygame.locals import *
+from .data import consts as c
+from .data.maps import stage1 as s1
 
 class Player():
     def __init__(self):
         #各変数の初期値設定
-        self.x = 1 #x, y はプレイヤーの位置。とりあえず左上のマスにしとく。
-        self.y = 1
+        self.x = s1.PLAYER_INIT["1F"][0] #x, y はプレイヤーの位置。とりあえず左上のマスにしとく。
+        self.y = s1.PLAYER_INIT["2F"][1]
 
     #プレイヤー操作
     def move(self, key, stage):
@@ -35,27 +37,17 @@ class Stage():
         self.height_blank = 150 #縦の空白部分
         self.width_blank = 200 #横の空白部分
         self.stage = [] #ステージを管理する配列
-        #0が空白マス，1が壁，2がイベントマス, "player"がプレイヤーの色
-        self.colors = {0:(0, 0, 0), 1:(115, 66, 41), 2:(233, 168, 38), "player":(0, 0, 255)} #順番にblack、brown、orange、blue
+        #0が空白マス，1が壁，2がイベントマス,3がスタートマス "player"がプレイヤーの色
+        self.colors = {0:c.BLACK, 1:c.FOREST_GREEN, 2:c.ORANGE, 3:c.ORANGE, "player":c.PLAYER_COLOR} #順番にblack、FORESTGREEN、orange、blue
     
     # ステージ生成
     def create_stage(self):
         #ステージの配列の作成
-        self.stage = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                      [1, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 1],
-                      [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                      [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                      [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                      [1, 0, 0, 1, 0, 2, 0, 0, 1, 1, 1, 0, 1],
-                      [1, 0, 0, 1, 0, 0, 0, 0, 1, 2, 1, 0, 1],
-                      [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-                      [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-                      [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-                      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+        self.stage = s1.MAP["1F"]
 
         """
-        理想はstage_createの引数に階層とか入れることでそのステージの配列を返すような関数を作りたい．
-        別に作っといてモジュールとしてimportするのもアリかもね．
+        理想はstage_createの引数に階層とか入れることでそのステージの配列を返すような関数を作りたい
+        別に作っといてモジュールとしてimportするのもアリかもね
         ちなみにこの配列形式を採用した理由としては，視覚的に見やすくて簡単に変更出来るからなんだけど,
         ステージが大きくなればなるほど大変になるので要検討．
         """

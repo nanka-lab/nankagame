@@ -1,31 +1,56 @@
 #ステージ1のデータ
-from ..consts import *
-
-
-#プレイヤーの初期位置
-PLAYER_START_X = 1
-PLAYER_START_Y = 1
+from .. import consts as c
+import numpy as np
+from ... import tools
 
 #制限時間
 TIME_LIMIT = 360
 
 #各階層の色
-STAGE_1F_COLOR = BROWN
-STAGE_2F_COLOR = BLUE
-STAGE_3F_COLOR = GREEN
-STAGE_4F_COLOR = GRAY
-STAGE_5F_COLOR = CYAN
+COLOR = {"1F": c.BROWN, "2F": c.BLUE, "3F": c.GREEN, "4F": c.GRAY, "5F": c.CYAN}
 
 #各階層のマップ
-MAP_1F = None
+#1F
+MAP_1F = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 3, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 1],
+        [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 1, 0, 2, 0, 0, 1, 1, 1, 0, 1],
+        [1, 0, 0, 1, 0, 0, 0, 0, 1, 2, 1, 0, 1],
+        [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
 
-MAP_2F = None
+#2F
+MAP_2F = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 1],
+        [1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1],
+        [1, 2, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 0, 0, 0, 2, 0, 0, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 1, 1, 0, 1, 2, 1, 0, 1],
+        [1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+        [1, 1, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 3, 1, 0, 0, 0, 1, 1, 2, 1, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
 
 MAP_3F = None
 
 MAP_4F = None
 
 MAP_5F = None
+
+#ステージ
+MAP = {"1F": MAP_1F, "2F": MAP_2F, "3F": MAP_3F, "4F": MAP_4F, "5F": MAP_5F}
+
+#プレーヤーの初期位置
+PLAYER_INIT = {"1F": tools.find_np_array_index(MAP["1F"], 3), 
+               "2F": tools.find_np_array_index(MAP["2F"], 3), 
+               "3F": None , #tools.find_np_array_index(MAP["3F"]
+               "4F": None ,
+               "5F": None ,}
 
 #プレイヤーの初期のスピードレベル
 PLAYER_INIT_SPEED = None
