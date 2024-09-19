@@ -15,7 +15,7 @@ class Screen():
         self.width = c.WINDOW_WIDTH
         self.height = c.WINDOW_HEIGHT
         self.window = pg.display.set_mode((self.width, self.height)) #ウィンドウ作成
-        pg.display.set_caption("なんかげーむ") #ウィンドウの名前を指定できます
+        pg.display.set_caption(c.TITLE_NAME) #ウィンドウの名前を指定できます
     def fill(self, color):
         self.screen.fill(color)
     def blit(self, text, rect):
@@ -33,7 +33,7 @@ class Title():
 
         #タイトル作ります
         title_font = pg.font.Font(font_path, 74) #タイトルを描画するフォントを設定
-        title_text = title_font.render("なんかげーむ", True, c.WHITE)
+        title_text = title_font.render(c.TITLE_NAME, True, c.WHITE)
         title_text_rect = title_text.get_rect(center = (self.width // 2, self.height // 2 - 150))
         self.screen.blit(title_text, title_text_rect)
         self.start_button = None
@@ -139,7 +139,7 @@ class GameScreen():
         #メニューの描画
         pg.draw.rect(self.screen, c.WHITE, (0, 0, self.width, 60)) #メニューの背景を白色に
         menu_font = pg.font.Font(font_path, 40) #メニューのフォントの設定
-        menu_text = menu_font.render(f"ステージ1：{self.game.current_floor}F   フロア数：5   制限時間：{tools.sec_convert_min(self.time_limit)[0]}m{tools.sec_convert_min(self.time_limit)[1]}s", True, c.BLACK)
+        menu_text = menu_font.render(f"ステージ1：{self.game.current_floor}F   総フロア数：{self.stage.s.FLOOR_NUMBER}   制限時間：{tools.sec_convert_min(self.time_limit)[0]}m{tools.sec_convert_min(self.time_limit)[1]}s", True, c.BLACK)
         self.screen.blit(menu_text, (22, 10)) #いい感じのところに配置
 
         #目標確認ボタン作ります

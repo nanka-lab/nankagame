@@ -1,5 +1,6 @@
 "ここでオブジェクトを定義します"
 import pygame as pg
+import datetime
 from pygame.locals import *
 from .data import consts as c
 from . import tools
@@ -22,35 +23,52 @@ class Player():
         self.game = game
         #各変数の初期値設定
         self.x, self.y = self.s.PLAYER_INIT #x, y はプレイヤーの位置。とりあえず左上のマスにしとく。
-        self.space = self.game.stage.map[self.y][self.x]
+        self.space = self.game.stage.map[self.y][self.x] #プレイヤーが現在いるマスの情報(0 or 1 or ...)
+        self.count = 15 #次に移動するまでのフレーム数。実質的な移動速度は (count // speed) となる。
+        self.past_x = self.x #動かす前のx
+        self.past_y = self.y #動かす前のy
+        self.now = pg.time.get_ticks() #現在の経過時間の取得
+        self.last_move_time = 0 # 最初の初期化時、まだ移動していないので現在時刻に設定
+        self.speed = 150  # 150ミリ秒（0.15秒）ごとに移動可能
     
     #フロア移動の際のxとyの移動
-    def up_down(self):
-        if self.space % 2 == 0:
-            new_space = self.space + 1
+    def up_down(self): 
+        if self.space % 2 == 0: 
+            new_space = self.space + 1 
             self.y, self.x = tools.find_np_array_index(self.game.stage.map, new_space)
+            self.past_y, self.past_x = self.y, self.x 
         else:
-            new_space = self.space - 1
+            new_space = self.space - 1 
             self.y, self.x = tools.find_np_array_index(self.game.stage.map, new_space)
+            self.past_y, self.past_x = self.y, self.x  
 
     #プレイヤー操作
-    def move(self, key, stage):
-        xOld, yOld = self.x, self.y #移動前のプレイヤーの場所を管理する変数
-    
-        #押されたキーに対する操作
-        if key == K_a or key == K_LEFT:
-            self.x -= 1
-        elif key == K_d or key == K_RIGHT:
-            self.x += 1
-        elif key == K_w or key == K_UP:
-            self.y -= 1
-        elif key == K_s or key == K_DOWN:
-            self.y += 1
+    def move(self):
+        time_elapsed = self.now - self.last_move_time  # 前回の移動から経過した時間
+
+        # 一定の時間が経過した場合に移動を行う
+        if time_elapsed > self.speed: 
+            keys = pg.key.get_pressed() 
+            if keys[K_a] or keys[K_LEFT]: 
+                self.past_x, self.past_y = self.x, self.y
+                self.x -= 1 
+            elif keys[K_d] or keys[K_RIGHT]: 
+                self.past_x, self.past_y = self.x, self.y 
+                self.x += 1 
+            elif keys[K_w] or keys[K_UP]: 
+                self.past_x, self.past_y = self.x, self.y 
+                self.y -= 1 
+            elif keys[K_s] or keys[K_DOWN]: 
+                self.past_x, self.past_y = self.x, self.y
+                self.y += 1 
+
+            # 移動が発生した場合、移動時間をリセット
+            self.last_move_time = self.now
     
         #移動先のマスに対する操作
-        if stage[self.y][self.x] == 1: #壁のとき
-            self.x, self.y = xOld, yOld
-        self.space = self.game.stage.map[self.y][self.x]
+        if self.game.stage.map[self.y][self.x] == 1: #壁のとき
+            self.x, self.y = self.past_x, self.past_y
+        self.space = self.game.stage.map[self.y][self.x] 
 
 
 class Stage():
