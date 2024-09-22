@@ -4,6 +4,21 @@ from . import setup
 from . import consts as c
 from ...data import consts as cc
 from ... import state
+import os
+
+def load_all_gfx(directory, colorkey=(255,0,255), accept=('.png', '.jpg', '.bmp', '.gif')):
+        graphics = {}
+        for pic in os.listdir(directory):
+            name, ext = os.path.splitext(pic)
+            if ext.lower() in accept:
+                img = pg.image.load(os.path.join(directory, pic))
+                if img.get_alpha():
+                    img = img.convert_alpha()
+                else:
+                    img = img.convert()
+                    img.set_colorkey(colorkey)
+                graphics[name] = img
+        return graphics
 
 class Control():
     def __init__(self):
@@ -52,6 +67,7 @@ class Control():
             pg.display.update()
             self.clock.tick(self.fps)
         return self.state.persist[c.GAME_CLEAR]
+    
 
 class State():
     def __init__(self):
@@ -111,11 +127,26 @@ class Start(State):
 
     def draw(self, screen):
         screen.fill(cc.BLACK)
+
+        back_ground_image = setup.GFX["level_1_4"]
+        screen.blit(back_ground_image, (0,0))
+
         #タイトル作ります
         title_font = pg.font.Font(state.font_path, 74) #タイトルを描画するフォントを設定
-        title_text = title_font.render(c.GAME_TITLE, True, cc.WHITE)
+        title_text = title_font.render(c.GAME_TITLE, True, cc.RED)
         title_text_rect = title_text.get_rect(center = (cc.WINDOW_WIDTH // 2 , cc.WINDOW_HEIGHT // 2 - 150))
         screen.blit(title_text, title_text_rect)
+
+        message_font = pg.font.Font(state.font_path, 74) #タイトルを描画するフォントを設定
+        message_text = message_font.render("〜燃えろ俺の指先〜", True, cc.RED)
+        message_text_rect = message_text.get_rect(center = (cc.WINDOW_WIDTH // 2 , cc.WINDOW_HEIGHT // 2 - 50))
+        screen.blit(message_text, message_text_rect)
+
+        message1_font = pg.font.Font(state.font_path, 60) #タイトルを描画するフォントを設定
+        message1_text = message1_font.render("press ENTER to start", True, cc.WHITE)
+        message1_text_rect = message1_text.get_rect(center = (cc.WINDOW_WIDTH // 2 , cc.WINDOW_HEIGHT // 2 + 40))
+        screen.blit(message1_text, message1_text_rect)
+
 
 class Count_down(State):
     def __init__(self):
@@ -125,7 +156,7 @@ class Count_down(State):
         
     def startup(self, current_time, persist):
         self.next = c.PLAY
-        self.count = 0
+        self.count = 3
         self.past_time = None
         self.first = True
         self.wait_seconds = 1 * cc.SECOND
@@ -267,4 +298,6 @@ class Result(State):
                 message_text = message_font.render(line, True, cc.WHITE)
                 message_text_rect = message_text.get_rect(center=(cc.WINDOW_WIDTH // 2, cc.WINDOW_HEIGHT // 2 + y_offset + i * line_spacing))
                 screen.blit(message_text, message_text_rect)
+
+
 

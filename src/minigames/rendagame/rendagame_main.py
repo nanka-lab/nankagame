@@ -1,8 +1,10 @@
 import pygame as pg
 from pygame.locals import *
+import os
+from . import setup
 from . import classes as cl
 from . import consts as c
-from . import setup
+
 
 def main():
     pg.init()

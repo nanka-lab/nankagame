@@ -1,3 +1,5 @@
+import os
+import pygame as pg
 #スクリーン設定
 GAME_TITLE = "連打ゲーム"
 
@@ -17,4 +19,7 @@ START = "start"
 COUNT_DOWN = "count_down"
 PLAY = "play"
 RESULT = "result"
+
+
+
 
