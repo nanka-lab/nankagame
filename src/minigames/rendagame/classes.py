@@ -20,6 +20,14 @@ def load_all_gfx(directory, colorkey=(255,0,255), accept=('.png', '.jpg', '.bmp'
                 graphics[name] = img
         return graphics
 
+def load_all_music(directory):
+    music_list = {}
+    for music in os.listdir(directory):
+        name, ext = os.path.splitext(music)
+        music_path = os.path.join(directory, music)
+        music_list[name] = music_path
+    return music_list
+
 class Control():
     def __init__(self):
         self.screen = pg.display.get_surface()
