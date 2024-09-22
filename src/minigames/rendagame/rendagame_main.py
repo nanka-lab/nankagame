@@ -21,4 +21,5 @@ def main():
                   c.RESULT: cl.Result()}
     game.setup_status(state_dict, c.START)
     result = game.main()
+    pg.mixer.music.stop()
     return result
