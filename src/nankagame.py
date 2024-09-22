@@ -1,8 +1,10 @@
 import pygame as pg
 import sys, datetime, os
 from pygame.locals import *     #pygameの定数
+from .data import consts as c
 from .data.maps import stage1 as s1
 from . import tools,classes,state
+from .minigames.rendagame import rendagame_main
 
 stage_list = {1: s1}
 floor_list = {1: "1F", 2: "2F", 3: "3F" , 4: "4F", 5: "5F"}
@@ -51,6 +53,15 @@ class Game():
                     self.current_floor-=1
                     self.stage = classes.Stage(self) #Stageのマップを更新
                     self.player.up_down()
+                if self.player.space == 2 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
+                    self.state = "minigame"
+            
+            elif self.state == "minigame" and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
+                self.player.past_x, self.player.past_y = self.player.x, self.player.y
+                self.current_screen = None
+                rendagame_main.main()
+                pg.display.set_caption(c.TITLE_NAME)
+                self.state = "game"
 
             elif self.state == "goalList": #目標確認画面の描写
                 self.current_screen = state.MissionScreen(self.screen)
