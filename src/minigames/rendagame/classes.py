@@ -207,7 +207,7 @@ class Play(State):
         self.next = c.RESULT
         self.count = 0
         self.last_pressed = None
-        self.goal = 210
+        self.goal = 100
         self.time_limit = 20 * cc.SECOND
         self.remaining_time = self.time_limit
         self.past_time = None

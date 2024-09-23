@@ -12,7 +12,7 @@ EVENT_X = 5
 EVENT_Y = "C"
 
 #制限時間[s]
-TIME_LIMIT = 60
+TIME_LIMIT = 120
 
 #各階層の壁の色
 WALL_COLOR = {"1F": c.BROWN, "2F": c.BLUE, "3F": c.GREEN, "4F": c.GRAY, "5F": c.CYAN}

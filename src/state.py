@@ -190,3 +190,10 @@ class GameOver():
         gameover_text = gameover_font.render("げーむおーばー", True, c.GREEN)
         gameover_text_rect = gameover_text.get_rect(center = (self.width // 2, self.height // 2))
         self.screen.blit(gameover_text, gameover_text_rect)
+
+    #戻るボタンを作ります
+        self.back_button = pg.draw.rect(self.screen, c.BLACK, (10, 10, 60, 30))
+        back_button_font = pg.font.Font(font_path, 25) #フォント設定
+        back_button_text = back_button_font.render("戻る", True, c.WHITE)
+        back_button_text_rect = back_button_text.get_rect(center = (10 + 60 // 2, 10 + 30 // 2))
+        self.screen.blit(back_button_text, back_button_text_rect)

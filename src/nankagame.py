@@ -102,6 +102,20 @@ class Game():
                     elif self.state == "goalList": #目標確認画面なら反応
                         if self.current_screen.back_button.collidepoint(event.pos): #ボタンがクリックされたら
                             self.state = "game" #ゲーム画面に移行
+                    
+                    elif self.state == "gameover":
+                        if self.current_screen.back_button.collidepoint(event.pos):
+                            self.__init__()
+                            self.state = "stageSelect"
+                            """
+                            self.time_limit = self.s.TIME_LIMIT
+                            self.time_now = 0
+                            self.goal_flag = False
+                            self.stage = classes.Stage(self) #Stageのインスタンスを作成
+                            self.player = classes.Player(self) #Playerのインスタンスを作成
+                            self.state = "stageSelect"
+                            """
+                            
             
             self.clock.tick(120) #120fps
             pg.display.update() #今までの変更を全部反映させる
