@@ -23,9 +23,14 @@ class Game():
         self.time_limit = self.s.TIME_LIMIT #制限時間
         self.stage = classes.Stage(self) #Stageのインスタンスを作成
         self.player = classes.Player(self) #Playerのインスタンスを作成
+        self.goal_flag = False
         
         pg.init() #おまじない．気にしなくていい
         self.screen = state.Screen()
+
+    def exchange(self, point):
+        return ord(point) - ord("A") +1
+
     
     def run(self):
         while self.running:
@@ -53,18 +58,18 @@ class Game():
                     self.current_floor-=1
                     self.stage = classes.Stage(self) #Stageのマップを更新
                     self.player.up_down()
-                if self.player.space == 2 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
+                if (self.player.x, self.player.y) == (self.s.EVENT_X, self.exchange(self.s.EVENT_Y)) and self.player.space == 2 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
                     self.state = "minigame"
             
             elif self.state == "minigame" and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
                 self.player.past_x, self.player.past_y = self.player.x, self.player.y
                 self.current_screen = None
-                rendagame_main.main()
+                self.goal_flag = rendagame_main.main()
                 pg.display.set_caption(c.TITLE_NAME)
                 self.state = "game"
 
             elif self.state == "goalList": #目標確認画面の描写
-                self.current_screen = state.MissionScreen(self.screen)
+                self.current_screen = state.MissionScreen(self)
 
             elif self.state == "gameover": #ゲームオーバー画面の描写
                 self.current_screen = state.GameOver(self.screen)

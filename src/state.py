@@ -151,10 +151,11 @@ class GameScreen():
 
 #目標画面の描画
 class MissionScreen():
-    def __init__(self, screen):
-        self.screen = screen.window
-        self.width = screen.width
-        self.height = screen.height
+    def __init__(self, game):
+        self.game = game
+        self.screen = self.game.screen.window
+        self.width = self.game.screen.width
+        self.height = self.game.screen.height
         self.back_button = None
         self.render()
     def render(self):
@@ -162,8 +163,10 @@ class MissionScreen():
 
         #目標確認リスト作ります
         goal_list = pg.draw.rect(self.screen, c.WHITE, (50, 50, self.width - 100, self.height - 100))
-        goal_list_font = pg.font.Font(font_path, 50) #フォント設定
-        goal_list_text = goal_list_font.render("ここでデータベース班の出番だ！", True, c.BLACK)
+        goal_list_font = pg.font.Font(font_path, 20) #フォント設定
+        goal_list_text = goal_list_font.render(
+            f"{self.game.goal_flag}, floor: {stage1.EVENT_FLOOR}, x: {stage1.EVENT_X}, y: {stage1.EVENT_Y}, {stage1.MINIGAME_1}, 報酬: なし"
+            , True, c.BLACK)
         goal_list_text_rect = goal_list_text.get_rect(center = (self.width // 2, self.height // 2))
         self.screen.blit(goal_list_text, goal_list_text_rect)
 
