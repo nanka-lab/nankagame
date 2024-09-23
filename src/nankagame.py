@@ -43,6 +43,8 @@ class Game():
                     self.time_now = pg.time.get_ticks() // 1000
                 if self.time_limit == 0: #制限時間が0になったら
                     self.state = "gameover" #ゲームオーバー画面に移行
+                if self.player.space == -1 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
+                    self.state = "gameclear" #ゲームクリア画面に移行
                 if self.player.space > 3 and self.player.space % 2 == 0 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
                     self.current_floor+=1
                     self.stage = classes.Stage(self) #Stageのマップを更新
@@ -57,6 +59,9 @@ class Game():
 
             elif self.state == "gameover": #ゲームオーバー画面の描写
                 self.current_screen = state.GameOver(self.screen)
+
+            elif self.state == "gameclear":  # ゲームクリア画面の描写
+                self.current_screen = state.GameClear(self.screen)
 
             pg.display.update() #今までの変更を全部反映させる
 
@@ -86,6 +91,10 @@ class Game():
                     elif self.state == "goalList": #目標確認画面なら反応
                         if self.current_screen.back_button.collidepoint(event.pos): #ボタンがクリックされたら
                             self.state = "game" #ゲーム画面に移行
+
+                    elif self.state == "gameclear":  # ゲームクリア画面なら反応
+                        if self.current_screen.title_button.collidepoint(event.pos):  # ボタンがクリックされたら
+                            self.__init__() #各変数を初期化する
             
             self.clock.tick(120) #120fps
             pg.display.update() #今までの変更を全部反映させる

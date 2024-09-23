@@ -187,3 +187,31 @@ class GameOver():
         gameover_text = gameover_font.render("げーむおーばー", True, c.GREEN)
         gameover_text_rect = gameover_text.get_rect(center = (self.width // 2, self.height // 2))
         self.screen.blit(gameover_text, gameover_text_rect)
+
+# ゲームクリア画面の描画
+class GameClear:
+    def __init__(self, screen):
+        self.screen = screen.window
+        self.width = screen.width
+        self.height = screen.height
+        self.render()
+    def render(self):
+        self.screen.fill(c.WHITE)  # 背景を全部黒にする
+        gameclear_font = pg.font.Font(font_path, 74) 
+        gameclear_text = gameclear_font.render("ゲームクリア", True, c.GOLD)
+        gameclear_text_rect = gameclear_text.get_rect(
+            center=(self.width // 2, self.height // 2 - 150)
+        )
+        self.screen.blit(gameclear_text, gameclear_text_rect)
+        self.start_button = None
+
+        # タイトルボタン作ります
+        self.title_button = pg.draw.rect(
+            self.screen, c.GREEN, (self.width // 2 - 100, self.height // 2, 200, 50)
+        )
+        title_button_font = pg.font.Font(font_path, 28)  # ボタンのフォント設定
+        title_button_text = title_button_font.render("タイトル", True, c.BLACK)
+        title_button_text_rect = title_button_text.get_rect(
+            center=(self.width // 2, self.height // 2 + 25)
+        )
+        self.screen.blit(title_button_text, title_button_text_rect)

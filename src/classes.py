@@ -86,8 +86,8 @@ class Stage():
 
     #マスの色を取得する関数
     def get_color(self, number):
-        #0が空白マス，1が壁，2がイベントマス, 3がスタートマス, 4以上の偶数が上階段, 5以上の奇数が下階段
-        color_list = {0:c.BLACK, 1:self.s.WALL_COLOR[self.floor], 2:c.ORANGE, 3:c.SKY_BLUE}
+        #0が空白マス，1が壁，2がイベントマス, 3がスタートマス, 4以上の偶数が上階段, 5以上の奇数が下階段, -1がゴールマス
+        color_list = {0:c.BLACK, 1:self.s.WALL_COLOR[self.floor], 2:c.ORANGE, 3:c.SKY_BLUE, -1:c.FOREST_GREEN}
         if number >3 and number%2 ==0:
             return c.PURPLE
         elif number >3 and number%2 == 1:
