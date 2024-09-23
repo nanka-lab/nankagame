@@ -1,8 +1,10 @@
 import pygame as pg
 import sys, datetime, os
 from pygame.locals import *     #pygameの定数
+from .data import consts as c
 from .data.maps import stage1 as s1
 from . import tools,classes,state
+from .minigames.rendagame import rendagame_main
 
 stage_list = {1: s1}
 floor_list = {1: "1F", 2: "2F", 3: "3F" , 4: "4F", 5: "5F"}
@@ -21,9 +23,14 @@ class Game():
         self.time_limit = self.s.TIME_LIMIT #制限時間
         self.stage = classes.Stage(self) #Stageのインスタンスを作成
         self.player = classes.Player(self) #Playerのインスタンスを作成
+        self.goal_flag = False
         
         pg.init() #おまじない．気にしなくていい
         self.screen = state.Screen()
+
+    def exchange(self, point):
+        return ord(point) - ord("A") +1
+
     
     def run(self):
         while self.running:
@@ -51,9 +58,18 @@ class Game():
                     self.current_floor-=1
                     self.stage = classes.Stage(self) #Stageのマップを更新
                     self.player.up_down()
+                if (self.player.x, self.player.y) == (self.s.EVENT_X, self.exchange(self.s.EVENT_Y)) and self.player.space == 2 and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
+                    self.state = "minigame"
+            
+            elif self.state == "minigame" and (self.player.past_x, self.player.past_y) != (self.player.x, self.player.y):
+                self.player.past_x, self.player.past_y = self.player.x, self.player.y
+                self.current_screen = None
+                self.goal_flag = rendagame_main.main()
+                pg.display.set_caption(c.TITLE_NAME)
+                self.state = "game"
 
             elif self.state == "goalList": #目標確認画面の描写
-                self.current_screen = state.MissionScreen(self.screen)
+                self.current_screen = state.MissionScreen(self)
 
             elif self.state == "gameover": #ゲームオーバー画面の描写
                 self.current_screen = state.GameOver(self.screen)
@@ -86,6 +102,20 @@ class Game():
                     elif self.state == "goalList": #目標確認画面なら反応
                         if self.current_screen.back_button.collidepoint(event.pos): #ボタンがクリックされたら
                             self.state = "game" #ゲーム画面に移行
+                    
+                    elif self.state == "gameover":
+                        if self.current_screen.back_button.collidepoint(event.pos):
+                            self.__init__()
+                            self.state = "stageSelect"
+                            """
+                            self.time_limit = self.s.TIME_LIMIT
+                            self.time_now = 0
+                            self.goal_flag = False
+                            self.stage = classes.Stage(self) #Stageのインスタンスを作成
+                            self.player = classes.Player(self) #Playerのインスタンスを作成
+                            self.state = "stageSelect"
+                            """
+                            
             
             self.clock.tick(120) #120fps
             pg.display.update() #今までの変更を全部反映させる
